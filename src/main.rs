@@ -2,6 +2,7 @@ extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate piston;
+extern crate rand;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;
@@ -10,31 +11,31 @@ use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{GlGraphics, OpenGL};
 
 mod app;
+mod common;
+mod edibles;
 mod snake;
 
 use app::App;
+use common::{WORLD_HEIGHT, WORLD_WIDTH};
 use snake::Snake;
-
-const WIDTH: u32 = 800;
-const HEIGHT: u32 = 600;
 
 fn main() {
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_3;
 
     // Create an Glutin window.
-    let mut window: Window = WindowSettings::new("snake", [WIDTH, HEIGHT])
-        .opengl(opengl)
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
+    let mut window: Window =
+        WindowSettings::new("snake", [WORLD_WIDTH as u32, WORLD_HEIGHT as u32])
+            .opengl(opengl)
+            .exit_on_esc(true)
+            .build()
+            .unwrap();
 
     // Create a new game and run it.
     let mut app = App::new(GlGraphics::new(opengl), Snake::new());
 
     let mut events = Events::new(EventSettings::new()).ups(30);
-    while let Some(e) = events.next(&mut window)  {
-
+    while let Some(e) = events.next(&mut window) {
         if !app.is_active() {
             println!("Cannabalism is bad! Game over!");
             break;
