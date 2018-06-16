@@ -6,3 +6,7 @@ pub struct Position {
     pub x: f64,
     pub y: f64,
 }
+
+pub trait Positionable {
+    fn set_position(&mut self, x: f64, y: f64);
+}

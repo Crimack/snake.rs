@@ -32,7 +32,7 @@ fn main() {
             .unwrap();
 
     // Create a new game and run it.
-    let mut app = App::new(GlGraphics::new(opengl), Snake::new());
+    let mut app = App::new(GlGraphics::new(opengl));
 
     let mut events = Events::new(EventSettings::new()).ups(30);
     while let Some(e) = events.next(&mut window) {

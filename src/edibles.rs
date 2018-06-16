@@ -1,51 +1,62 @@
-use rand::{thread_rng, Rng};
-
 use snake::Snake;
-use common::{Position, WORLD_HEIGHT, WORLD_WIDTH};
-use app::App;
+use common::{Position, Positionable};
 
 pub trait Edible {
     fn eat(&mut self, snake: &mut Snake);
 }
 
-pub struct Food<'a> {
-    position: Position,
-    app: &'a App<'a>
+pub struct Food {
+    pub position: Position,
+    pub was_eaten: bool,
 }
 
-impl<'a> Food<'a> {
-    pub fn new(app: &'a App) -> Food {
-        let (x, y) = new_random_position(app);
+impl Food {
+    pub fn new(x: f64, y: f64) -> Food {
         Food {
             position: Position { x, y },
-            app,
+            was_eaten: false,
         }
     }
 }
 
-impl<'a> Edible for Food<'a> {
-    fn eat(&mut self, snake: &mut Snake) {}
+impl Edible for Food {
+    fn eat(&mut self, snake: &mut Snake) {
+        self.was_eaten = true;
+    }
 }
 
-pub struct Poison<'a> {
-    position: Position,
-    app: &'a App<'a>,
+impl Positionable for Food {
+    fn set_position(&mut self, x: f64, y: f64) {
+        self.position.x = x;
+        self.position.y = y;
+        self.was_eaten = false;
+    }
 }
 
-impl<'a> Edible for Poison<'a> {
-    fn eat(&mut self, snake: &mut Snake) {}
+pub struct Poison {
+    pub position: Position,
+    pub was_eaten: bool,
 }
 
-fn new_random_position(app: &App) -> (f64, f64) {
-    let locations = app.get_object_locations();
-    let mut rng = thread_rng();
-
-    loop {
-        // Generate as u32 so we're guaranteed integer locations
-        let x = rng.gen_range(0, WORLD_WIDTH as u32) as f64;
-        let y = rng.gen_range(0, WORLD_HEIGHT as u32) as f64;
-        if !locations.iter().any(|i| i.x == x && i.y == y) {
-            return (x, y);
+impl Poison {
+    pub fn new(x: f64, y: f64) -> Poison {
+        Poison {
+            position: Position { x, y },
+            was_eaten: false,
         }
+    }
+}
+
+impl Edible for Poison {
+    fn eat(&mut self, snake: &mut Snake) {
+        self.was_eaten = true;
+    }
+}
+
+impl Positionable for Poison {
+    fn set_position(&mut self, x: f64, y: f64) {
+        self.position.x = x;
+        self.position.y = y;
+        self.was_eaten = false;
     }
 }
