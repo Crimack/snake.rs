@@ -1,5 +1,5 @@
-use snake::Snake;
 use common::{Position, Positionable};
+use snake::Snake;
 
 pub trait Edible {
     fn eat(&mut self, snake: &mut Snake);

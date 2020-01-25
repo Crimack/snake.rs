@@ -1,12 +1,12 @@
-use piston::input::*;
-use opengl_graphics::GlGraphics;
 use graphics::*;
+use opengl_graphics::GlGraphics;
+use piston::input::*;
 use rand::{thread_rng, Rng};
 
 use edibles::{Food, Poison};
+use snake::MoveDirection;
 use snake::Snake;
 use snake::SNAKE_PART_WIDTH;
-use snake::MoveDirection;
 
 use common::{Position, Positionable, WORLD_HEIGHT, WORLD_WIDTH};
 
@@ -144,18 +144,21 @@ impl App {
     // For spawning we want a list of locations where other things are,
     // so that there are't any instant collisions
     fn get_object_locations(&self) -> Vec<&Position> {
-        let mut locations = self.snake
+        let mut locations = self
+            .snake
             .parts
             .iter()
             .map(|i| &i.position)
             .collect::<Vec<&Position>>();
 
-        let food = self.food
+        let food = self
+            .food
             .iter()
             .map(|i| &i.position)
             .collect::<Vec<&Position>>();
 
-        let poison = self.poison
+        let poison = self
+            .poison
             .iter()
             .map(|i| &i.position)
             .collect::<Vec<&Position>>();

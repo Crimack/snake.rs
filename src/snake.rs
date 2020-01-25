@@ -1,5 +1,5 @@
-use edibles::{Edible, Food, Poison};
 use common::{Position, WORLD_HEIGHT, WORLD_WIDTH};
+use edibles::{Edible, Food, Poison};
 
 pub const SNAKE_PART_WIDTH: f64 = 10.0;
 pub const SNAKE_PART_HALF_WIDTH: f64 = 5.0;
@@ -79,7 +79,7 @@ impl Snake {
 
         for f in food {
             if head_x + SNAKE_PART_HALF_WIDTH >= f.position.x - SNAKE_PART_HALF_WIDTH
-                && head_x - SNAKE_PART_HALF_WIDTH< f.position.x + SNAKE_PART_HALF_WIDTH
+                && head_x - SNAKE_PART_HALF_WIDTH < f.position.x + SNAKE_PART_HALF_WIDTH
                 && head_y + SNAKE_PART_HALF_WIDTH >= f.position.y - SNAKE_PART_HALF_WIDTH
                 && head_y - SNAKE_PART_HALF_WIDTH < f.position.y + SNAKE_PART_HALF_WIDTH
             {
@@ -92,7 +92,7 @@ impl Snake {
             if head_x + SNAKE_PART_HALF_WIDTH >= p.position.x - SNAKE_PART_HALF_WIDTH
                 && head_x - SNAKE_PART_HALF_WIDTH < p.position.x + SNAKE_PART_HALF_WIDTH
                 && head_y + SNAKE_PART_HALF_WIDTH >= p.position.y - SNAKE_PART_HALF_WIDTH
-                && head_y - SNAKE_PART_HALF_WIDTH< p.position.y + SNAKE_PART_HALF_WIDTH
+                && head_y - SNAKE_PART_HALF_WIDTH < p.position.y + SNAKE_PART_HALF_WIDTH
             {
                 self.shrink();
                 p.eat(self);
