@@ -1,5 +1,5 @@
-use common::{Position, WORLD_HEIGHT, WORLD_WIDTH};
-use edibles::{Edible, Food, Poison};
+use common::{Position, Positionable, WORLD_HEIGHT, WORLD_WIDTH};
+use edibles::Edible;
 
 pub const SNAKE_PART_WIDTH: f64 = 10.0;
 pub const SNAKE_PART_HALF_WIDTH: f64 = 5.0;
@@ -30,7 +30,7 @@ impl Snake {
         }
     }
 
-    pub fn update(&mut self, food: &mut Vec<Food>, poison: &mut Vec<Poison>) {
+    pub fn update(&mut self, edibles: &mut Vec<Edible>) {
         let old_x = self.parts[0].position.x;
         let old_y = self.parts[0].position.y;
 
@@ -64,11 +64,11 @@ impl Snake {
                 self.parts[0].position.y = new_y;
             }
         }
-        self.check_for_intersection(food, poison);
+        self.check_for_intersection(edibles);
         self.update_body(old_x, old_y);
     }
 
-    fn check_for_intersection(&mut self, food: &mut Vec<Food>, poison: &mut Vec<Poison>) {
+    fn check_for_intersection(&mut self, edibles: &mut Vec<Edible>) {
         let (head_x, head_y) = (self.parts[0].position.x, self.parts[0].position.y);
 
         for part in &self.parts[1..] {
@@ -77,30 +77,18 @@ impl Snake {
             }
         }
 
-        for f in food {
-            if head_x + SNAKE_PART_HALF_WIDTH >= f.position.x - SNAKE_PART_HALF_WIDTH
-                && head_x - SNAKE_PART_HALF_WIDTH < f.position.x + SNAKE_PART_HALF_WIDTH
-                && head_y + SNAKE_PART_HALF_WIDTH >= f.position.y - SNAKE_PART_HALF_WIDTH
-                && head_y - SNAKE_PART_HALF_WIDTH < f.position.y + SNAKE_PART_HALF_WIDTH
+        for e in edibles {
+            if head_x + SNAKE_PART_HALF_WIDTH >= e.position().x - SNAKE_PART_HALF_WIDTH
+                && head_x - SNAKE_PART_HALF_WIDTH < e.position().x + SNAKE_PART_HALF_WIDTH
+                && head_y + SNAKE_PART_HALF_WIDTH >= e.position().y - SNAKE_PART_HALF_WIDTH
+                && head_y - SNAKE_PART_HALF_WIDTH < e.position().y + SNAKE_PART_HALF_WIDTH
             {
-                self.grow();
-                f.eat(self);
-            }
-        }
-
-        for p in poison {
-            if head_x + SNAKE_PART_HALF_WIDTH >= p.position.x - SNAKE_PART_HALF_WIDTH
-                && head_x - SNAKE_PART_HALF_WIDTH < p.position.x + SNAKE_PART_HALF_WIDTH
-                && head_y + SNAKE_PART_HALF_WIDTH >= p.position.y - SNAKE_PART_HALF_WIDTH
-                && head_y - SNAKE_PART_HALF_WIDTH < p.position.y + SNAKE_PART_HALF_WIDTH
-            {
-                self.shrink();
-                p.eat(self);
+                e.eat(self);
             }
         }
     }
 
-    fn grow(&mut self) {
+    pub fn grow(&mut self) {
         let (tail_x, tail_y) = (
             self.parts.last().unwrap().position.x,
             self.parts.last().unwrap().position.y,
@@ -120,7 +108,7 @@ impl Snake {
         });
     }
 
-    fn shrink(&mut self) {
+    pub fn shrink(&mut self) {
         let target_length = self.parts.len() / 2;
 
         self.parts.truncate(target_length);

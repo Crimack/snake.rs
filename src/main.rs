@@ -17,7 +17,6 @@ mod snake;
 
 use app::App;
 use common::{WORLD_HEIGHT, WORLD_WIDTH};
-use snake::Snake;
 
 fn main() {
     // Change this to OpenGL::V2_1 if not working.

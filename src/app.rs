@@ -3,10 +3,8 @@ use opengl_graphics::GlGraphics;
 use piston::input::*;
 use rand::{thread_rng, Rng};
 
-use edibles::{Food, Poison};
-use snake::MoveDirection;
-use snake::Snake;
-use snake::SNAKE_PART_WIDTH;
+use edibles::{Edible, EdibleType};
+use snake::{MoveDirection, Snake, SNAKE_PART_WIDTH};
 
 use common::{Position, Positionable, WORLD_HEIGHT, WORLD_WIDTH};
 
@@ -20,8 +18,7 @@ pub struct App {
     // OpenGL drawing backend.
     gl: GlGraphics,
     snake: Snake,
-    food: Vec<Food>,
-    poison: Vec<Poison>,
+    edibles: Vec<Edible>,
 }
 
 impl App {
@@ -29,32 +26,31 @@ impl App {
         App {
             gl,
             snake: Snake::new(),
-            food: vec![
-                Food::new(1.0, 3.0),
-                Food::new(1.0, 3.0),
-                Food::new(12.0, 3.0),
-                Food::new(421.0, 34.0),
-                Food::new(61.0, 39.0),
-                Food::new(14.0, 3.0),
-                Food::new(1.0, 3.0),
-                Food::new(91.0, 33.0),
-                Food::new(731.0, 323.0),
-                Food::new(330.0, 450.0),
-                Food::new(500.0, 553.0),
-            ],
-            poison: vec![
-                Poison::new(100.0, 200.0),
-                Poison::new(400.0, 500.0),
-                Poison::new(500.0, 400.0),
-                Poison::new(350.0, 250.0),
+            edibles: vec![
+                // Good tings
+                Edible::new(1.0, 3.0, EdibleType::FOOD),
+                Edible::new(1.0, 3.0, EdibleType::FOOD),
+                Edible::new(12.0, 3.0, EdibleType::FOOD),
+                Edible::new(421.0, 34.0, EdibleType::FOOD),
+                Edible::new(61.0, 39.0, EdibleType::FOOD),
+                Edible::new(14.0, 3.0, EdibleType::FOOD),
+                Edible::new(1.0, 3.0, EdibleType::FOOD),
+                Edible::new(91.0, 33.0, EdibleType::FOOD),
+                Edible::new(731.0, 323.0, EdibleType::FOOD),
+                Edible::new(330.0, 450.0, EdibleType::FOOD),
+                Edible::new(500.0, 553.0, EdibleType::FOOD),
+                // Bad tings
+                Edible::new(100.0, 200.0, EdibleType::POISON),
+                Edible::new(400.0, 500.0, EdibleType::POISON),
+                Edible::new(500.0, 400.0, EdibleType::POISON),
+                Edible::new(350.0, 250.0, EdibleType::POISON),
             ],
         }
     }
 
     pub fn render(&mut self, args: &RenderArgs) {
         let snake_body = &self.snake.parts;
-        let good_edibles = &self.food;
-        let bad_edibles = &self.poison;
+        let edibles = &self.edibles;
 
         self.gl.draw(args.viewport(), |c, gl| {
             // Clear the screen.
@@ -71,40 +67,37 @@ impl App {
                 );
             }
 
-            for f in good_edibles {
-                rectangle(
-                    GOOD_EDIBLE,
-                    rectangle::square(f.position.x, f.position.y, SNAKE_PART_WIDTH),
-                    transform,
-                    gl,
-                );
-            }
-
-            for p in bad_edibles {
-                rectangle(
-                    BAD_EDIBLE,
-                    rectangle::square(p.position.x, p.position.y, SNAKE_PART_WIDTH),
-                    transform,
-                    gl,
-                );
+            for e in edibles {
+                match e.edible_type {
+                    EdibleType::FOOD => {
+                        rectangle(
+                            GOOD_EDIBLE,
+                            rectangle::square(e.position.x, e.position.y, SNAKE_PART_WIDTH),
+                            transform,
+                            gl,
+                        );
+                    }
+                    EdibleType::POISON => {
+                        rectangle(
+                            BAD_EDIBLE,
+                            rectangle::square(e.position.x, e.position.y, SNAKE_PART_WIDTH),
+                            transform,
+                            gl,
+                        );
+                    }
+                }
             }
         });
     }
 
-    pub fn update(&mut self, args: &UpdateArgs) {
-        self.snake.update(&mut self.food, &mut self.poison);
+    pub fn update(&mut self, _args: &UpdateArgs) {
+        self.snake.update(&mut self.edibles);
 
         let (x, y) = self.new_random_position();
 
-        for mut f in &mut self.food {
-            if f.was_eaten {
-                f.set_position(x, y)
-            }
-        }
-
-        for mut p in &mut self.poison {
-            if p.was_eaten {
-                p.set_position(x, y)
+        for e in &mut self.edibles {
+            if e.was_eaten {
+                e.set_position(x, y)
             }
         }
     }
@@ -151,20 +144,13 @@ impl App {
             .map(|i| &i.position)
             .collect::<Vec<&Position>>();
 
-        let food = self
-            .food
+        let edibles = self
+            .edibles
             .iter()
             .map(|i| &i.position)
             .collect::<Vec<&Position>>();
 
-        let poison = self
-            .poison
-            .iter()
-            .map(|i| &i.position)
-            .collect::<Vec<&Position>>();
-
-        locations.extend(food);
-        locations.extend(poison);
+        locations.extend(edibles);
 
         locations
     }
