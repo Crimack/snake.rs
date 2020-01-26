@@ -1,5 +1,5 @@
 use common::{Position, Positionable, WORLD_HEIGHT, WORLD_WIDTH};
-use edibles::Edible;
+use edibles::{Edible, EdibleType};
 
 pub const SNAKE_PART_WIDTH: f64 = 10.0;
 pub const SNAKE_PART_HALF_WIDTH: f64 = 5.0;
@@ -144,4 +144,124 @@ pub enum MoveDirection {
     RIGHT,
     UP,
     DOWN,
+}
+
+#[test]
+fn test_collision_right() {
+    let mut snake = Snake {
+        parts: vec![
+            SnakePart {
+                position: Position { x: 2.0, y: 1.0 },
+                index: 0,
+            },
+            SnakePart {
+                position: Position { x: 1.0, y: 1.0 },
+                index: 1,
+            },
+        ],
+        current_direction: MoveDirection::RIGHT,
+        alive: true,
+    };
+
+    let mut food = vec![
+        Edible::new(3.0, 1.0, EdibleType::FOOD),
+        Edible::new(4.0, 2.0, EdibleType::FOOD),
+        Edible::new(5.0, 0.0, EdibleType::FOOD),
+    ];
+
+    for _ in 0..food.len() {
+        snake.update(&mut food);
+    }
+
+    assert_eq!(snake.parts.len(), 3);
+}
+
+#[test]
+fn test_collision_left() {
+    let mut snake = Snake {
+        parts: vec![
+            SnakePart {
+                position: Position { x: 4.0, y: 1.0 },
+                index: 0,
+            },
+            SnakePart {
+                position: Position { x: 5.0, y: 1.0 },
+                index: 1,
+            },
+        ],
+        current_direction: MoveDirection::LEFT,
+        alive: true,
+    };
+
+    let mut food = vec![
+        Edible::new(3.0, 1.0, EdibleType::FOOD),
+        Edible::new(2.0, 2.0, EdibleType::FOOD),
+        Edible::new(1.0, 0.0, EdibleType::FOOD),
+    ];
+
+    for _ in 0..food.len() {
+        snake.update(&mut food);
+    }
+
+    assert_eq!(snake.parts.len(), 3);
+}
+
+#[test]
+fn test_collision_up() {
+    let mut snake = Snake {
+        parts: vec![
+            SnakePart {
+                position: Position { x: 3.0, y: 3.0 },
+                index: 0,
+            },
+            SnakePart {
+                position: Position { x: 3.0, y: 2.0 },
+                index: 1,
+            },
+        ],
+        current_direction: MoveDirection::UP,
+        alive: true,
+    };
+
+    let mut food = vec![
+        Edible::new(3.0, 4.0, EdibleType::FOOD),
+        Edible::new(4.0, 5.0, EdibleType::FOOD),
+        Edible::new(2.0, 6.0, EdibleType::FOOD),
+    ];
+
+    for _ in 0..food.len() {
+        snake.update(&mut food);
+    }
+
+    assert_eq!(snake.parts.len(), 3);
+}
+
+#[test]
+fn test_collision_down() {
+    let mut snake = Snake {
+        parts: vec![
+            SnakePart {
+                position: Position { x: 3.0, y: 3.0 },
+                index: 0,
+            },
+            SnakePart {
+                position: Position { x: 3.0, y: 4.0 },
+                index: 1,
+            },
+        ],
+        current_direction: MoveDirection::DOWN,
+        alive: true,
+    };
+
+    let mut food = vec![
+        Edible::new(3.0, 2.0, EdibleType::FOOD),
+        Edible::new(4.0, 1.0, EdibleType::FOOD),
+        Edible::new(2.0, 0.0, EdibleType::FOOD),
+    ];
+
+    for _ in 0..food.len() {
+        snake.update(&mut food);
+    }
+
+    assert_eq!(snake.parts.len(), 3);
 }
